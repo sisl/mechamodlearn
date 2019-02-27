@@ -50,6 +50,28 @@ class AbstractRigidBody:
         ham = kenergy + pot
         return ham
 
+    def corriolisforce(self, q, v, mass_matrix=None):
+        """ Computes the corriolis matrix times v
+        """
+        with torch.enable_grad():
+            if mass_matrix is None:
+                mass_matrix = self.mass_matrix(q)
+
+            Mv = mass_matrix @ v.unsqueeze(2)
+
+            KE = 0.5 * v.unsqueeze(1) @ Mv
+
+            Cv_KE = torch.autograd.grad(KE.sum(), q, retain_graph=True, create_graph=True)[0]
+
+            gMv = torch.stack([
+                torch.autograd.grad(Mv[:, i].sum(), q, retain_graph=True, create_graph=True)[0]
+                for i in range(q.size(1))
+            ], dim=1)
+
+            Cv = gMv @ v.unsqueeze(2) - Cv_KE.unsqueeze(2)
+
+        return Cv
+
     def corriolis(self, q, v, mass_matrix=None):
         """ Computes the corriolis matrix
         """
@@ -96,10 +118,8 @@ class AbstractRigidBody:
         with torch.enable_grad():
             with utils.temp_require_grad((q, v)):
                 M = self.mass_matrix(q)
-                C = self.corriolis(q, v, M)
+                Cv = self.corriolisforce(q, v, M)
                 G = self.gradpotential(q)
-
-        Cv = C @ v.unsqueeze(2)
 
         F = torch.zeros_like(Cv)
 
