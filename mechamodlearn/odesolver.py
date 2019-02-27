@@ -114,6 +114,16 @@ def rk4_alt_step_func(func, t, dt, y, k1=None, u=None):
 
 
 def odeint(func, y0, t, method=None, transforms=None, **kwargs):
+    """Integrates `func` with initial conditions `y0` at points specified by `t`
+    Arguments:
+    - `func` : function to integrate: ydot = func(t, y, u=u)
+    - `y0`   : initial conditions for integration
+
+    Keyword arguments:
+    - `method` :  integration scheme in ['euler', 'midpoint', 'rk4'] (default='rk4')
+    - `transforms` : a function applied after every step is computed, e.g. wrap_to_pi (default=None)
+    """
+
     tensor_input, func, y0, t = _check_inputs(func, y0, t)
     solver = SOLVERS[method](func, y0, transforms=transforms)
     solution = solver.integrate(t, **kwargs)
