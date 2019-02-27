@@ -28,11 +28,12 @@ python experiments/simple.py --logdir /tmp/simplelog
 ## References
 
 ---
-If you found this library useful in your research, please consider citing:
+If you found this library useful in your research, please consider citing our [paper](https://arxiv.org/abs/1902.08705):
 ```
 @article{gupta2019mod,
     title={A General Framework for Structured Learning of Mechanical Systems},
     author={Gupta, Jayesh K. and Menda, Kunal and Manchester, Zachary and Kochenderfer, Mykel},
+    journal={arXiv preprint arXiv:1902.08705},
     year={2019}
 }
 ```
