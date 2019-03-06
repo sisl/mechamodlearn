@@ -472,6 +472,20 @@ class OfflineTrainer(TrainerBase):
 
 
 def compute_qvloss(model, q_T_B, v_T_B, u_T_B, dt, vlambda=1.0, method='rk4', preds=False):
+    """Computes T-step loss
+    Arguments:
+    - `q_T_B` : (Timesteps x Batch_size x qdim) tensor of gen. coordinates
+    - `v_T_B` : (Timesteps x Batch_size x qdim) tensor of gen. velocities
+    - `u_T_B` : (Timesteps x Batch_size x udim) tensor of actuator inputs
+              Note: last time-step of u_T_B is ignored
+    - `dt`    : Time-step [s]
+
+    Keyword Arguments:
+    - `vlambda`:  coefficient of vloss (loss = q_loss + vlambda * v_loss) (default=1.0)
+    - `method` :  integration scheme in ['euler', 'midpoint', 'rk4'] (default='rk4')
+    - `preds`  :  will return predicted q_T_b, v_T_B as third return value if True (default=False)
+    """
+
     T = u_T_B.size(0)
     t_points = torch.arange(0, T * dt, dt).to(q_T_B.device).requires_grad_(True)
     assert len(t_points) == T
