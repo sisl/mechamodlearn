@@ -487,7 +487,7 @@ def compute_qvloss(model, q_T_B, v_T_B, u_T_B, dt, vlambda=1.0, method='rk4', pr
     """
 
     T = u_T_B.size(0)
-    t_points = torch.arange(0, T * dt, dt).to(q_T_B.device).requires_grad_(True)
+    t_points = torch.arange(0, T * dt + dt / 2, dt)[:-1].to(q_T_B.device).requires_grad_(True)
     assert len(t_points) == T
     # Simulate forward
     qpreds_T_B, vpreds_T_B = odeint(model, (q_T_B[0], v_T_B[0]), t_points, u=u_T_B, method=method,
