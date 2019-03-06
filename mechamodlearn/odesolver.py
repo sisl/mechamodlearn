@@ -82,7 +82,8 @@ class Euler(FixedGridODESolver):
 class Midpoint(FixedGridODESolver):
 
     def step_func(self, func, t, dt, y, u):
-        y_mid = tuple(y_ + f_ * dt / 2 for y_, f_ in zip(y, func(t, y, u=u)))
+        y_mid = tuple(
+            trans(y_ + f_ * dt / 2) for y_, f_, trans in zip(y, func(t, y, u=u), self.transforms))
         return tuple(dt * f_ for f_ in func(t + dt / 2, y_mid, u=u))
 
     @property
