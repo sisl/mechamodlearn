@@ -4,7 +4,12 @@
 import random
 import sys
 from contextlib import contextmanager
-import resource
+try:
+    import resource
+except ImportError:
+    # resource not available on Windows
+    resource = None
+
 import numpy as np
 from numba import jit
 import timeit
